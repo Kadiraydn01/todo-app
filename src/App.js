@@ -13,7 +13,7 @@ function App() {
   const [editTaskId, setEditTaskId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
 
-  const API_URL = "http://localhost:5000/api/tasks";
+  const API_URL = "https://tragically-canoe-71918-fe3b2b40d5d2.herokuapp.com/api/tasks";
 
   useEffect(() => {
     fetch(API_URL)
