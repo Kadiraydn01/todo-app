@@ -36,7 +36,7 @@ function App() {
     })
       .then((res) => res.json())
       .then((task) => {
-        setTasks((prev) => [...prev, task]);
+        setTasks((prev) => [task, ...prev]);
         setNewTaskText("");
       })
       .catch((err) => console.error(err));
