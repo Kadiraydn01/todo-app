@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useRef } from "react";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -8,10 +8,30 @@ function App() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [planDate, setPlanDate] = useState("");
   const [completedSearch, setCompletedSearch] = useState("");
-
-  // Düzenleme için state
   const [editTaskId, setEditTaskId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target)
+    ) {
+      setDropdownOpenId(null); 
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
+
+
 
   const API_URL = "https://tragically-canoe-71918-fe3b2b40d5d2.herokuapp.com/api/tasks";
 
@@ -89,8 +109,10 @@ function App() {
   const incompleteTasks = tasks.filter(
     (t) => !t.completed && (t.planDate === null || t.planDate === undefined)
   );
-  const plannedTasks = tasks.filter((t) => !t.completed && t.planDate);
-  const completedTasks = tasks.filter((t) => t.completed);
+const plannedTasks = tasks
+  .filter((t) => !t.completed && t.planDate)
+  .sort((a, b) => new Date(a.planDate) - new Date(b.planDate));
+const completedTasks = tasks.filter((t) => t.completed);
 
   const handlePlanClick = (task) => {
     setSelectedTask(task);
@@ -124,7 +146,6 @@ function App() {
     <div className="min-h-screen p-6 bg-gray-100">
       <h1 className="mb-6 text-3xl font-bold text-center">Görev Yöneticisi</h1>
 
-      {/* Yeni görev ekleme */}
       <div className="flex justify-center max-w-xl gap-2 mx-auto mb-8">
         <input
           type="text"
@@ -142,9 +163,7 @@ function App() {
         </button>
       </div>
 
-      {/* Üç kolon */}
       <div className="grid grid-cols-1 gap-6 mx-auto md:grid-cols-3 max-w-7xl">
-        {/* Tamamlanmamış Görevler */}
         <div className="p-4 bg-white rounded shadow">
           <h2 className="mb-4 text-lg font-semibold text-blue-600">
             Tamamlanmamış Görevler
@@ -196,11 +215,19 @@ function App() {
                       <span>{task.title}</span>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() =>
-                            setDropdownOpenId(
-                              dropdownOpenId === task._id ? null : task._id
-                            )
-                          }
+                        onClick={(e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const dropdownHeight = 90; // 2 seçenek x 45px gibi düşün
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const openUpward = spaceBelow < dropdownHeight;
+
+  setDropdownPosition({
+    top: openUpward ? rect.top + window.scrollY - dropdownHeight : rect.bottom + window.scrollY,
+    left: rect.right - 176, // dropdown genişliği kadar sola
+  });
+  setDropdownOpenId(dropdownOpenId === task._id ? null : task._id);
+}}
+
                           className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-3 py-1.5"
                         >
                           Seçenekler
@@ -223,7 +250,7 @@ function App() {
                 </div>
 
                 {dropdownOpenId === task._id && !editTaskId && (
-                  <div className="absolute right-0 z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
+<div ref={dropdownRef}  className="fixed z-50 mt-1 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow" style={{ top: dropdownPosition.top, left: dropdownPosition.left }}>
                     <ul className="py-2 text-sm text-gray-700">
                       <li>
                         <button
@@ -251,7 +278,6 @@ function App() {
           </ul>
         </div>
 
-        {/* Planlanmış Görevler */}
         <div className="p-4 bg-white rounded shadow">
           <h2 className="mb-4 text-lg font-semibold text-purple-600">
             Planlanmış Görevler
