@@ -11,6 +11,8 @@ function App() {
   const [editTaskId, setEditTaskId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [tick, setTick] = useState(0);
+
 
   const dropdownRef = useRef(null);
 
@@ -29,6 +31,15 @@ function App() {
     document.removeEventListener("mousedown", handleClickOutside);
   };
 }, []);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setTick((prev) => prev + 1);
+  }, 60000);  
+
+  return () => clearInterval(interval);
+}, []);
+
 
 
 
