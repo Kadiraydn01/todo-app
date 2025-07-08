@@ -44,7 +44,7 @@ useEffect(() => {
 
 
 
-  const API_URL = "https://tragically-canoe-71918-fe3b2b40d5d2.herokuapp.com/api/tasks";
+  const API_URL = "https://todo-app-1-b2lv.onrender.com/";
 
   useEffect(() => {
     fetch(API_URL)
