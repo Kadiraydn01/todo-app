@@ -44,7 +44,7 @@ useEffect(() => {
 
 
 
-  const API_URL = "https://todo-app-1-b2lv.onrender.com/";
+  const API_URL = "https://todo-app-1-b2lv.onrender.com";
 
   useEffect(() => {
     fetch(API_URL)
